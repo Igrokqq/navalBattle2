@@ -1,14 +1,14 @@
 import { Entity } from '../core/Entity';
 
-export class Square extends Entity {
-    constructor(name, x, y, size, color = '#000') {
+export class Ship extends Entity {
+    constructor(name, x, y, size, position) {
         super();
         this.name = name;
         this.x = x;
         this.y = y;
-        this.w = size;
-        this.h = size;
-        this.color = color;
+        this.w = position === 'horizontal' ? size * 2 : size;
+        this.h = position === 'vertical' ? size * 2 : size;
+        this.position = position; // for dynamic position
     }
 
     draw() {

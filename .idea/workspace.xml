@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="cd52d26e-f549-4aa8-b292-58387fe338ee" name="Default Changelist" comment="" />
+    <list default="true" id="cd52d26e-f549-4aa8-b292-58387fe338ee" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,7 +20,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/client" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1buIwPrl3yhsh8dmZcwrHWddcrJ" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -31,6 +35,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -42,11 +47,17 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1589475789799</updated>
-      <workItem from="1589475793455" duration="11743000" />
+      <workItem from="1589475793455" duration="21002000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="171" y="39" key="SettingsEditor" timestamp="1589558409439">
+      <screen x="0" y="0" width="1280" height="800" />
+    </state>
+    <state x="171" y="39" key="SettingsEditor/0.0.1280.800@0.0.1280.800" timestamp="1589558409439" />
   </component>
 </project>

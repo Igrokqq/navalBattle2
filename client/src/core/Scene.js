@@ -4,6 +4,7 @@ import { Logger } from '../core/Logger';
 export class Scene {
     constructor() {
         this._layers = {};
+        this._engine = null;
     }
 
     clear() {
@@ -22,11 +23,13 @@ export class Scene {
     addLayer(name) {
         if (this._layers[name]) {
             Logger.error('This layer already exists', name);
-            return this;
+            return null;
         }
 
         const layer = document.createElement('canvas');
         layer.id = `layer_${name}`;
+        layer.width = 1024;
+        layer.height = 768;
 
         Scene.getContainer().append(layer);
 
@@ -35,7 +38,7 @@ export class Scene {
             context: layer.getContext('2d'),
         };
 
-        return this;
+        return this._layers[name];
     }
 
     getLayer(name) {
@@ -49,5 +52,17 @@ export class Scene {
 
     static getContainer() {
         return document.querySelector('#container');
+    }
+
+    getLayers() {
+        return this._layers;
+    }
+
+    setEngine(engine) {
+        this._engine = engine;
+    }
+
+    addEntity(entity, layer) {
+        this._engine.addEntity(entity, layer);
     }
 }

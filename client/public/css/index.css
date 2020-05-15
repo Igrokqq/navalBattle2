@@ -15,4 +15,5 @@ html, body {
     position: absolute;
     width: 1024px;
     height: 768px;
+    image-rendering: pixelated;
 }
