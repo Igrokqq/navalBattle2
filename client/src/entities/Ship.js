@@ -6,17 +6,28 @@ export class Ship extends Entity {
         this.name = name;
         this.x = x;
         this.y = y;
-        this.w = position === 'horizontal' ? size * 2 : size;
-        this.h = position === 'vertical' ? size * 2 : size;
-        this.position = position; // for dynamic position
+        this.w = this.position === 'horizontal' ? this.size * 2 : this.size;
+        this.h = this.position === 'vertical' ? this.size * 2 : this.size;
+        this.position = position;
+        this.size = size;
+        this.color = '#ff2631';
     }
 
     draw() {
         const { context } = this.layer;
 
-        // context.rect(this.x, this.y, this.w, this.h);
+        this.w = this.position === 'horizontal' ? this.size * 2 : this.size;
+        this.h = this.position === 'vertical' ? this.size * 2 : this.size;
 
         context.fillStyle = this.color;
         context.fillRect(this.x, this.y, this.w, this.h);
+    }
+
+    togglePosition() {
+        if (this.position === 'horizontal') {
+            this.position = 'vertical';
+        } else {
+            this.position = 'horizontal';
+        }
     }
 }

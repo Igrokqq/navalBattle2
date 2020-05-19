@@ -2,14 +2,29 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cd52d26e-f549-4aa8-b292-58387fe338ee" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/client/src/core/EventManager.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/client/src/entities/FpsText.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/.gitkeep" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/public/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/public/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/core/Engine.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/core/Engine.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/core/Entity.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/core/Entity.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/core/Scene.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/core/Scene.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/entities/Ship.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/entities/Ship.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/entities/Square.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/entities/Square.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/scenes/Game.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/scenes/Game.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution>
+      <executable />
+    </execution>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -35,7 +50,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -54,10 +69,28 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/client" />
+    </ignored-roots>
+  </component>
   <component name="WindowStateProjectService">
-    <state x="171" y="39" key="SettingsEditor" timestamp="1589558409439">
-      <screen x="0" y="0" width="1280" height="800" />
+    <state x="362" y="221" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1589924560802">
+      <screen x="0" y="23" width="1280" height="777" />
+    </state>
+    <state x="362" y="221" key="#com.intellij.fileTypes.FileTypeChooser/0.23.1280.777@0.23.1280.777" timestamp="1589924560802" />
+    <state x="0" y="23" width="833" height="777" key="CommitChangelistDialog2" timestamp="1589924600325">
+      <screen x="0" y="23" width="1280" height="777" />
+    </state>
+    <state x="0" y="23" width="833" height="777" key="CommitChangelistDialog2/0.23.1280.777@0.23.1280.777" timestamp="1589924600325" />
+    <state x="0" y="90" key="DiffContextDialog" timestamp="1589924586396">
+      <screen x="0" y="23" width="1280" height="777" />
+    </state>
+    <state x="0" y="90" key="DiffContextDialog/0.23.1280.777@0.23.1280.777" timestamp="1589924586396" />
+    <state x="171" y="61" key="SettingsEditor" timestamp="1589924459036">
+      <screen x="0" y="23" width="1280" height="777" />
     </state>
     <state x="171" y="39" key="SettingsEditor/0.0.1280.800@0.0.1280.800" timestamp="1589558409439" />
+    <state x="171" y="61" key="SettingsEditor/0.23.1280.777@0.23.1280.777" timestamp="1589924459036" />
   </component>
 </project>
