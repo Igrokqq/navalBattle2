@@ -17,6 +17,7 @@ export class Game extends Scene {
         this.currentShip = {
             type: 'bipartite',
             size: 2,
+            canBeAdded: true,
         };
         this.shipsLimits = {
             single: 5,
@@ -69,6 +70,8 @@ export class Game extends Scene {
 
     update() {
         this.drawFps();
+        this.drawShipsLimits();
+        this.changeStatusIfCurrentShipCantBeAdded();
     }
 
     handleClick(x, y, entity) {
@@ -117,59 +120,66 @@ export class Game extends Scene {
         const goesBeyondTheMapByX = (currentTileX) * gameMap.tileSize > gameMap.w;
 
         if (entity.wasMovedByY) {
-            entity.y += gameMap.tileSize;
+            entity.y += gameMap.tileSize * (this.currentShip.size - 1);
             entity.wasMovedByY = false;
         }
 
         if (goesBeyondTheMapByX && entity.position === 'horizontal') {
             Logger.info('greater than screen height');
 
-            entity.x -= gameMap.tileSize;
+            entity.x -= gameMap.tileSize * (this.currentShip.size - 1);
         }
 
         if (goesBeyondTheMapByY && entity.position === 'horizontal') {
             Logger.info('greater than screen height');
 
-            entity.y -= gameMap.tileSize;
+            entity.y -= gameMap.tileSize * (this.currentShip.size - 1);
             entity.wasMovedByY = true;
         }
     }
 
     addShip(x, y) {
-        const gameMap = this.getEntity('game_map');
+        if (this.currentShip.canBeAdded) {
+            const gameMap = this.getEntity('game_map');
 
-        const currentTileX = Math.floor(x / gameMap.tileSize);
-        const currentTileY = Math.floor( y / gameMap.tileSize);
+            const currentTileX = Math.floor(x / gameMap.tileSize);
+            const currentTileY = Math.floor(y / gameMap.tileSize);
 
-        x = currentTileX <= 1 ? gameMap.x : (gameMap.tileSize * (currentTileX - 1)) + gameMap.x;
-        y = currentTileY <= 1 ? gameMap.y : (gameMap.tileSize * (currentTileY - 1)) + gameMap.y;
+            x = currentTileX <= 1 ? gameMap.x : (gameMap.tileSize * (currentTileX - 1)) + gameMap.x;
+            y = currentTileY <= 1 ? gameMap.y : (gameMap.tileSize * (currentTileY - 1)) + gameMap.y;
 
-        const ship = new Ship(
-            `number${this.shipIndex}_ship`,
-            x,
-            y,
-            gameMap.tileSize,
-            this.currentShip.size,
-            'horizontal'
-        );
+            const ship = new Ship(
+                `number${this.shipIndex}_ship`,
+                x,
+                y,
+                gameMap.tileSize,
+                this.currentShip.size,
+                'horizontal'
+            );
 
-        this.addEntity(ship, this.layers.userMap);
+            this.shipsLimits[this.currentShip.type] -= 1;
 
-        const goesBeyondTheMapByX = (currentTileX + 1) * gameMap.tileSize > gameMap.w;
+            this.addEntity(ship, this.layers.userMap);
 
-        if (goesBeyondTheMapByX && ship.position === 'horizontal') {
-            Logger.info('greater than screen height');
+            const goesBeyondTheMapByX = (currentTileX + this.currentShip.size - 1) * gameMap.tileSize > gameMap.w;
 
-            ship.x -= gameMap.tileSize;
+            if (goesBeyondTheMapByX && ship.position === 'horizontal') {
+                Logger.info('greater than screen height');
+
+                ship.x -= gameMap.tileSize * (this.currentShip.size - 1);
+            }
+
+            this.shipIndex += 1;
+        } else {
+            alert('This type of ship is over');
         }
-
-        this.shipIndex += 1;
     }
 
     renderShipsList(itemsQuantity) {
         let { x, y, tileSize, w, h, } = this.getEntity('game_map');
         let prevShipY = null;
         const shipsLimits = Object.values(this.shipsLimits);
+
         for (let i = 0; i < itemsQuantity; i += 1) {
             if (i > 0) {
                 prevShipY = this.getEntity(`ships_menu_item_number${i - 1}`).y;
@@ -190,9 +200,10 @@ export class Game extends Scene {
 
             const shipLimitText = new ShipLimitText(
                 `ships_menu_item_limit_text_number${i}`,
-                ship.w + 20,
-                i === 0 ? y : y + (tileSize * 2),
-                `x${shipsLimits[i]}`
+                ship.x + (ship.tileSize * ship.size) + tileSize / 2,
+                i === 0 ? y + Math.round(tileSize / 1.5) : y + (tileSize * 2) + Math.round(tileSize / 1.5),
+                `x${shipsLimits[i]}`,
+                24,
             );
 
             ship.belongsToTheMenu = true;
@@ -211,9 +222,28 @@ export class Game extends Scene {
         entity.togglePosition();
     }
 
-    changeShipSize(entity) {
-        // do stuff
-        this.currentShip.size = entity.size;
+    changeShipSize({ size }) {
+        const relationSizesToNames = {
+            1: 'single',
+            2: 'bipartite',
+            3: 'tripartite',
+            4: 'fourBanded',
+        };
+        this.currentShip.size = size;
+        this.currentShip.type = relationSizesToNames[size];
+
         Logger.info('selected ship size', this.currentShip.size);
+    }
+
+    drawShipsLimits() {
+        const shipsLimits = Object.values(this.shipsLimits);
+
+        for (let i = 0; i < this.maxShipSize; i += 1) {
+            this.getEntity(`ships_menu_item_limit_text_number${i}`).setText(`x${shipsLimits[i]}`);
+        }
+    }
+
+    changeStatusIfCurrentShipCantBeAdded() {
+        this.currentShip.canBeAdded = this.shipsLimits[this.currentShip.type] > 0;
     }
 }
