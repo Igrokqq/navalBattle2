@@ -14,9 +14,8 @@ export class Square extends Entity {
     draw() {
         const { context } = this.layer;
 
-        // context.rect(this.x, this.y, this.w, this.h);
-
         context.fillStyle = this.color;
         context.fillRect(this.x, this.y, this.w, this.h);
     }
+
 }

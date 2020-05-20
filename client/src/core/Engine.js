@@ -1,11 +1,12 @@
-import { Logger } from '../core/Logger';
+import { Logger } from './Logger';
+import { EventManager } from './EventManager';
 
 export class Engine {
     constructor() {
         this._scenesMap = {};
         this._currentScene = null;
-        this._entities = {};
-        this._depthCount = 0;
+
+        new EventManager(this);
     }
 
     startScene(scene) {
@@ -16,19 +17,29 @@ export class Engine {
 
         let _scene = this._scenesMap[scene]();
 
-        _scene.setEngine(this);
+        // _scene.setEngine(this);
 
         this._currentScene = _scene;
 
         _scene.clear();
         _scene.prepare();
-        window.requestAnimationFrame(() => {
-            this.clearSceneLayers(_scene);
 
-            const entities = this.sortEntitiesByDepth();
+        this.gameLoop();
+        // setInterval(() => {
+        //     this.gameLoop();
+        // }, 1000 / 30);
+    }
 
-            entities.forEach((entity) => entity.draw());
-        });
+    gameLoop() {
+        this.clearSceneLayers(this._currentScene);
+
+        const entities = this.sortEntitiesByDepth(this._currentScene.getEntities());
+
+        entities.forEach((entity) => entity.draw());
+
+        this._currentScene.update();
+
+        window.requestAnimationFrame(() => { this.gameLoop() });
     }
 
     getCurrentScene() {
@@ -48,32 +59,12 @@ export class Engine {
         return this._scenesMap;
     }
 
-    addEntity(entity, layer) {
-        if (this._entities[entity.getName()]) {
-            Logger.error('This entity exists', entity);
-            return;
-        }
-
-        entity.setLayer(layer);
-
-        this._depthCount += 1;
-
-        entity.zIndex = this._depthCount;
-
-        this._entities[entity.getName()] = entity;
-    }
-
-    destroyEntity(entity) {
-        entity.destroy();
-        delete this._entities[entity.getName()];
-    }
-
-    sortEntitiesByDepth() {
-        return Object.values(this._entities).sort((entity1, entity2) => {
-            if (entity1.zIndex < entity2.zIndex) {
+    sortEntitiesByDepth(entities) {
+        return Object.values(entities).sort((entity1, entity2) => {
+            if (entity1.depth < entity2.depth) {
                 return -1;
             }
-            if (entity1.zIndex > entity2.zIndex) {
+            if (entity1.depth > entity2.depth) {
                 return 1;
             }
 

@@ -8,7 +8,7 @@ export class Entity {
         this.h = 0;
         this.name = null;
         this.layer = null;
-        this.zIndex = 0;
+        this.depth = 0;
     }
 
     draw() {

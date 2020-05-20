@@ -1,22 +1,34 @@
 import { Entity } from '../core/Entity';
 
 export class Ship extends Entity {
-    constructor(name, x, y, size, position) {
+    constructor(name, x, y, tileSize, size, position) {
         super();
         this.name = name;
         this.x = x;
         this.y = y;
-        this.w = position === 'horizontal' ? size * 2 : size;
-        this.h = position === 'vertical' ? size * 2 : size;
-        this.position = position; // for dynamic position
+        this.size = size;
+        this.tileSize = tileSize;
+        this.w = this.position === 'horizontal' ? this.tileSize * this.size : this.tileSize;
+        this.h = this.position === 'vertical' ? this.tileSize * this.size : this.tileSize;
+        this.position = position;
+        this.color = '#ff2631';
     }
 
     draw() {
         const { context } = this.layer;
 
-        // context.rect(this.x, this.y, this.w, this.h);
+        this.w = this.position === 'horizontal' ? this.tileSize * this.size : this.tileSize;
+        this.h = this.position === 'vertical' ? this.tileSize * this.size : this.tileSize;
 
         context.fillStyle = this.color;
         context.fillRect(this.x, this.y, this.w, this.h);
+    }
+
+    togglePosition() {
+        if (this.position === 'horizontal') {
+            this.position = 'vertical';
+        } else {
+            this.position = 'horizontal';
+        }
     }
 }

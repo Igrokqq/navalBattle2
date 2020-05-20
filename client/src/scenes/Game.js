@@ -2,49 +2,218 @@ import { Scene } from '../core/Scene';
 import { Logger } from '../core/Logger';
 import { Square } from '../entities/Square';
 import { Ship } from '../entities/Ship';
+import {FpsText} from '../entities/FpsText';
+import { GameMap } from '../entities/GameMap';
+import {ShipLimitText} from "../entities/ShipLimitText";
 
 export class Game extends Scene {
     // here private methods
 
+    constructor() {
+        super();
+        this.cubeIndex = 0;
+        this.shipIndex = 0;
+        this.maxShipSize = 4;
+        this.currentShip = {
+            type: 'bipartite',
+            size: 2,
+        };
+        this.shipsLimits = {
+            single: 5,
+            bipartite: 3,
+            tripartite: 2,
+            fourBanded: 1,
+        }
+    }
+
     prepare() {
         Logger.debug('Our game');
-        const background = this.addLayer('background');
-        const userMap = this.addLayer('userMap');
+        this.layers = {
+            background: this.addLayer('background'),
+            userMap: this.addLayer('userMap')
+        };
 
-        const cube1 = new Square('cube1', 10, 10, 40);
-        const cube2 = new Square('cube2', 14, 14, 40, '#fcba03');
-        const cube3 = new Square('cube3', 18, 18, 40, '#29f705');
-        const cube4 = new Square('cube4', 22, 22, 40, '#be42eb');
-        const cube5 = new Square('cube5', 26, 26, 40, '#1dd1ce');
+        const gameMap = new GameMap('game_map', 40, 40, 32,8);
 
-        const ship1 = new Ship('ship1', 100, 100, 40, 'vertical');
-        const ship2 = new Ship('ship2', 200, 100, 40, 'horizontal');
-
-        this.addEntity(cube1, background);
-        this.addEntity(cube2, background);
-        this.addEntity(cube3, background);
-        this.addEntity(cube4, background);
-        this.addEntity(cube5, background);
-
-        // our ship
-        this.addEntity(ship1, background);
-        this.addEntity(ship2, background);
-        // new Square('cube1', background, 10, 10);
-
-        // const cube1 = new Square('cube1');
+        // const cube1 = new Square('black_cube', 10, 10, 40);
+        // const cube2 = new Square('yellow_cube', 14, 14, 40, '#fcba03');
+        // const cube4 = new Square('purple_cube', 22, 22, 40, '#be42eb');
+        // const cube5 = new Square('aqua_cube', 26, 26, 40, '#1dd1ce');
+        // const cube3 = new Square('green_cube', 18, 18, 40, '#29f705');
         //
+        // const ship1 = new Ship('vertical_ship', 100, 100, 40, 'vertical');
+        // const ship2 = new Ship('horizontal_ship', 200, 100, 40, 'horizontal');
 
-        // // what? what are your name? pixels? layer?
-        // this.addEntity(new Square('cube1'), 10, 10, 'background');
+        // our map
+        this.addEntity(gameMap, this.layers.userMap);
+
+        // this.addEntity(cube1, this.layers.userMap);
+        // this.addEntity(cube2, this.layers.userMap);
         //
-        // // what? where? pixels?
-        //name layout, x|y
+        // this.addEntity(cube4, this.layers.userMap);
+        // this.addEntity(cube3, this.layers.userMap);
         //
-        // new Square('cube1', 'background', 10, 10);
+        // this.addEntity(cube5, this.layers.background);
         //
-        // new Square('cube1', this, 10, 10);
+        // // our ship
+        // this.addEntity(ship1, this.layers.userMap);
+        // this.addEntity(ship2, this.layers.userMap);
+
+        this.renderShipsList(this.maxShipSize);
+
+        this.times = [];
+        this.fps = 0;
+        let fpsText = new FpsText('fps_text', 100, 20, 'FPS: ' + this.fps);
+        this.addEntity(fpsText, this.layers.userMap);
     }
 
     update() {
+        this.drawFps();
+    }
+
+    handleClick(x, y, entity) {
+        if (entity) {
+            entity.color = this.getRandomColor();
+
+            if (entity instanceof GameMap) {
+                this.addShip(x, y);
+            }
+            if (entity instanceof Ship) {
+                entity.belongsToTheMenu ? this.changeShipSize(entity) : this.toggleShipPosition(x, y, entity);
+            }
+        } else {
+            let cube = new Square(`number${this.cubeIndex}_cube`, x, y, 20, this.getRandomColor());
+            this.addEntity(cube, this.layers.userMap);
+
+            this.cubeIndex += 1;
+        }
+    }
+
+    drawFps() {
+        const now = performance.now();
+        while (this.times.length > 0 && this.times[0] <= now - 1000) {
+            this.times.shift();
+        }
+        this.times.push(now);
+        this.fps = this.times.length;
+
+        this.getEntity('fps_text').setText(`FPS: ${this.fps}`);
+    }
+
+    getRandomColor() {
+        let letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    shipGoesBeyondTheMap(x, y, entity, gameMap) {
+        const currentTileX = Math.floor( x / gameMap.tileSize);
+        const currentTileY = Math.floor( y / gameMap.tileSize);
+
+        const goesBeyondTheMapByY = (currentTileY + 1) * gameMap.tileSize > gameMap.h;
+        const goesBeyondTheMapByX = (currentTileX) * gameMap.tileSize > gameMap.w;
+
+        if (entity.wasMovedByY) {
+            entity.y += gameMap.tileSize;
+            entity.wasMovedByY = false;
+        }
+
+        if (goesBeyondTheMapByX && entity.position === 'horizontal') {
+            Logger.info('greater than screen height');
+
+            entity.x -= gameMap.tileSize;
+        }
+
+        if (goesBeyondTheMapByY && entity.position === 'horizontal') {
+            Logger.info('greater than screen height');
+
+            entity.y -= gameMap.tileSize;
+            entity.wasMovedByY = true;
+        }
+    }
+
+    addShip(x, y) {
+        const gameMap = this.getEntity('game_map');
+
+        const currentTileX = Math.floor(x / gameMap.tileSize);
+        const currentTileY = Math.floor( y / gameMap.tileSize);
+
+        x = currentTileX <= 1 ? gameMap.x : (gameMap.tileSize * (currentTileX - 1)) + gameMap.x;
+        y = currentTileY <= 1 ? gameMap.y : (gameMap.tileSize * (currentTileY - 1)) + gameMap.y;
+
+        const ship = new Ship(
+            `number${this.shipIndex}_ship`,
+            x,
+            y,
+            gameMap.tileSize,
+            this.currentShip.size,
+            'horizontal'
+        );
+
+        this.addEntity(ship, this.layers.userMap);
+
+        const goesBeyondTheMapByX = (currentTileX + 1) * gameMap.tileSize > gameMap.w;
+
+        if (goesBeyondTheMapByX && ship.position === 'horizontal') {
+            Logger.info('greater than screen height');
+
+            ship.x -= gameMap.tileSize;
+        }
+
+        this.shipIndex += 1;
+    }
+
+    renderShipsList(itemsQuantity) {
+        let { x, y, tileSize, w, h, } = this.getEntity('game_map');
+        let prevShipY = null;
+        const shipsLimits = Object.values(this.shipsLimits);
+        for (let i = 0; i < itemsQuantity; i += 1) {
+            if (i > 0) {
+                prevShipY = this.getEntity(`ships_menu_item_number${i - 1}`).y;
+            }
+
+            if (prevShipY !== null) {
+                y = prevShipY;
+            }
+
+            const ship = new Ship(
+                `ships_menu_item_number${i}`,
+                w + 100,
+                i === 0 ? y : y + (tileSize * 2),
+                tileSize,
+                i + 1,
+                'horizontal'
+            );
+
+            const shipLimitText = new ShipLimitText(
+                `ships_menu_item_limit_text_number${i}`,
+                ship.w + 20,
+                i === 0 ? y : y + (tileSize * 2),
+                `x${shipsLimits[i]}`
+            );
+
+            ship.belongsToTheMenu = true;
+
+            this.addEntity(ship, this.layers.background);
+            this.addEntity(shipLimitText, this.layers.background);
+        }
+        Logger.info('ships', this.getEntities());
+    }
+
+    toggleShipPosition(x, y, entity) {
+        const gameMap = this.getEntity('game_map');
+
+        this.shipGoesBeyondTheMap(x, y, entity, gameMap);
+
+        entity.togglePosition();
+    }
+
+    changeShipSize(entity) {
+        // do stuff
+        this.currentShip.size = entity.size;
+        Logger.info('selected ship size', this.currentShip.size);
     }
 }
