@@ -116,23 +116,23 @@ export class Game extends Scene {
         const currentTileX = Math.floor( x / gameMap.tileSize);
         const currentTileY = Math.floor( y / gameMap.tileSize);
 
-        const goesBeyondTheMapByY = (currentTileY + 1) * gameMap.tileSize > gameMap.h;
-        const goesBeyondTheMapByX = (currentTileX) * gameMap.tileSize > gameMap.w;
+        const goesBeyondTheMapByY = (currentTileY + (this.currentShip.size - 1)) * gameMap.tileSize > gameMap.h;
+        const goesBeyondTheMapByX = (currentTileX + (this.currentShip.size - 1)) * gameMap.tileSize > gameMap.w;
 
         if (entity.wasMovedByY) {
             entity.y += gameMap.tileSize * (this.currentShip.size - 1);
             entity.wasMovedByY = false;
         }
 
-        if (goesBeyondTheMapByX && entity.position === 'horizontal') {
-            Logger.info('greater than screen height');
-
+        if (goesBeyondTheMapByX && entity.position === 'vertical') {
             entity.x -= gameMap.tileSize * (this.currentShip.size - 1);
         }
 
-        if (goesBeyondTheMapByY && entity.position === 'horizontal') {
-            Logger.info('greater than screen height');
+        if (goesBeyondTheMapByX && entity.position === 'horizontal') {
+            entity.x += gameMap.tileSize * (this.currentShip.size - 1);
+        }
 
+        if (goesBeyondTheMapByY && entity.position === 'horizontal') {
             entity.y -= gameMap.tileSize * (this.currentShip.size - 1);
             entity.wasMovedByY = true;
         }
