@@ -20,6 +20,7 @@ export class Engine {
         this._currentScene = _scene;
 
         _scene.clear();
+        _scene.initDebug();
         _scene.prepare();
 
         this._gameLoop();
@@ -31,6 +32,8 @@ export class Engine {
         const entities = this._sortEntitiesByDepth(this._currentScene.getEntities());
 
         entities.forEach((entity) => entity.draw());
+
+        this._currentScene._drawFps();
 
         this._currentScene.update();
 

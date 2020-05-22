@@ -2,7 +2,6 @@ import { Scene } from '../core/Scene';
 import { Logger } from '../core/Logger';
 import { Square } from '../entities/Square';
 import { Ship } from '../entities/Ship';
-import {FpsText} from "../entities/FpsText";
 import {Utility} from "../core/Utility";
 
 export class Game extends Scene {
@@ -21,14 +20,10 @@ export class Game extends Scene {
         this.addEntity(ship1, this.layers.userMap);
         this.addEntity(ship2, this.layers.userMap);
 
-        this.times = [];
-        this.fps = 0;
-        let fpsText = new FpsText('fps_text', 100, 20, 'FPS: ' + this.fps);
-        this.addEntity(fpsText, this.layers.userMap);
     }
 
     update() {
-        this.drawFps();
+
     }
 
     onClick(x, y, entity) {
@@ -43,16 +38,5 @@ export class Game extends Scene {
                 this.cubeIndex++;
             }
         }
-    }
-
-    drawFps() {
-        const now = performance.now();
-        while (this.times.length > 0 && this.times[0] <= now - 1000) {
-            this.times.shift();
-        }
-        this.times.push(now);
-        this.fps = this.times.length;
-
-        this.getEntity('fps_text').setText('FPS: ' + this.fps);
     }
 }

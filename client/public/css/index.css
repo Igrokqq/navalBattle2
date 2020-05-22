@@ -17,3 +17,7 @@ html, body {
     height: 768px;
     image-rendering: pixelated;
 }
+
+#container canvas#layer___engineDebugInfo {
+    z-index: 999;
+}

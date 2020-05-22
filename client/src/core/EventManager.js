@@ -11,9 +11,9 @@ export class EventManager {
         container.addEventListener('mouseup', this._onMouseUp.bind(this), false);
         container.addEventListener('mousemove', this._onMouseMove.bind(this), false);
 
-        container.addEventListener('keydown', this._onKeyDown.bind(this), false);
-        container.addEventListener('keypress', this._onKeyPress.bind(this), false);
-        container.addEventListener('keyup', this._onKeyUp.bind(this), false);
+        window.addEventListener('keydown', this._onKeyDown.bind(this), false);
+        window.addEventListener('keypress', this._onKeyPress.bind(this), false);
+        window.addEventListener('keyup', this._onKeyUp.bind(this), false);
     }
 
     _onClick(event) {

@@ -1,4 +1,5 @@
 import { Logger } from './Logger';
+import {FpsText} from "../entities/FpsText";
 
 // мои слои, наша отрисовка слоев
 export class Scene {
@@ -8,6 +9,12 @@ export class Scene {
         this._entityDepthCount = 0;
         this._layerDepthCount = 0;
         this._cursorInsideEntities = {};
+
+        this._debugInfo = {
+            layerName: '__engineDebugInfo',
+            times: [],
+            fps: 0
+        };
     }
 
     clear() {
@@ -21,6 +28,13 @@ export class Scene {
 
     update() {
         throw new Error('method is not implemented');
+    }
+
+    initDebug() {
+        this.addLayer(this._debugInfo.layerName);
+
+        let fpsText = new FpsText('fps_text', 20, 20);
+        this.addEntity(fpsText, this.getLayer(this._debugInfo.layerName));
     }
 
     addLayer(name) {
@@ -213,5 +227,16 @@ export class Scene {
 
     _checkDepth(handleEntity, entity) {
         return handleEntity.depth < entity.depth && handleEntity.layer.depth <= entity.layer.depth;
+    }
+
+    _drawFps() {
+        const now = window.performance.now();
+        while (this._debugInfo.times.length > 0 && this._debugInfo.times[0] <= now - 1000) {
+            this._debugInfo.times.shift();
+        }
+        this._debugInfo.times.push(now);
+        this._debugInfo.fps = this._debugInfo.times.length;
+
+        this.getEntity('fps_text').setFps(this._debugInfo.fps);
     }
 }
