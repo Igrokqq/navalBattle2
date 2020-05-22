@@ -4,6 +4,7 @@ import {AreaForSelectedObject} from "../entities/ship_menu/AreaForSelectedObject
 import {Ship as ShipForMenu} from "../entities/ship_menu/Ship";
 import {ShipInfo as ShipInfoForMenu} from "../entities/ship_menu/ShipInfo";
 import {Utility} from "../core/Utility";
+import {SeaField} from "../entities/SeaField";
 
 export class Game extends Scene {
     prepare() {
@@ -35,6 +36,10 @@ export class Game extends Scene {
         this.addEntity(textForShip2, this.layers.userMap);
         this.addEntity(textForShip3, this.layers.userMap);
         this.addEntity(textForShip4, this.layers.userMap);
+
+        let seaField = new SeaField('seaField', 200, 40, 32, 10);
+
+        this.addEntity(seaField, this.layers.background);
     }
 
     update() {
