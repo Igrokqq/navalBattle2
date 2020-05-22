@@ -7,4 +7,12 @@ export class Utility {
         }
         return color;
     }
+
+    static setCursor(cursor) {
+        document.body.style.cursor = cursor;
+    }
+
+    static cloneEntity(entity) {
+        return Object.assign( Object.create( Object.getPrototypeOf(entity)), entity);
+    }
 }

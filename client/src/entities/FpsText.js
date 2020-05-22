@@ -4,38 +4,40 @@ export class FpsText extends Entity {
     constructor(name, x, y) {
         super();
 
-        this.name = name;
-        this.x = x;
-        this.y = y;
-        this.fps = 0;
-        this.isShow = true;
+        this.setName(name);
+        this.setX(x);
+        this.setY(y);
+
+        this._fps = 0;
+        this._isShow = true;
     }
 
     draw() {
-        if (this.isShow === false) {
+        if (this._isShow === false) {
             return;
         }
 
-        const { context } = this.layer;
+        const { context } = this.getLayer();
 
-        let phrase = `FPS: ${this.fps}`;
+        let phrase = `FPS: ${this._fps}`;
 
         context.fillStyle = '#ccc';
-        context.fillRect(this.x, this.y, 64, 20);
+        context.fillRect(this.getX(), this.getY(), 64, 20);
 
         context.fillStyle = '#000';
         context.font = '16px Arial';
-        context.fillText(phrase, this.x + 2, this.y * 2 - 4);
+        context.textBaseline = 'top';
+        context.fillText(phrase, this.getX() + 4, this.getY() + 4);
         context.fill();
     }
 
     setFps(fps) {
-        this.fps = fps;
+        this._fps = fps;
     }
 
     onKeyUp(event) {
         if (event.ctrlKey === true && event.code === 'KeyQ') {
-            this.isShow = !this.isShow;
+            this._isShow = !this._isShow;
         }
     }
 }
