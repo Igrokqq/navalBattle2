@@ -1,13 +1,13 @@
-import { Logger } from '../core/Logger';
+import { Logger } from './Logger';
 
 // мои слои, наша отрисовка слоев
 export class Scene {
     constructor() {
         this._layers = {};
-        this._engine = null;
         this._entities = {};
         this._entityDepthCount = 0;
         this._layerDepthCount = 0;
+        this._cursorInsideEntities = {};
     }
 
     clear() {
@@ -64,10 +64,6 @@ export class Scene {
         return this._layers;
     }
 
-    setEngine(engine) {
-        this._engine = engine;
-    }
-
     getEntities() {
         return this._entities;
     }
@@ -101,31 +97,121 @@ export class Scene {
         delete this._entities[entity.getName()];
     }
 
-    onClick(x, y) {
-        let handleEntity = null;
+    onClick(x, y, entity) {}
+    onMouseDown(x, y, entity) {}
+    onMouseUp(x, y, entity) {}
+    onMouseMove(x, y) {}
+    onKeyDown(event) {}
+    onKeyPress(event) {}
+    onKeyUp(event) {}
 
+    _onClick(x, y) {
+        let handleEntity = this._getHandleEntity(x, y);
+
+        if (handleEntity) {
+            handleEntity.onClick(x, y);
+        }
+
+        this.onClick(x, y, handleEntity);
+    }
+
+    _onMouseDown(x, y) {
+        let handleEntity = this._getHandleEntity(x, y);
+
+        if (handleEntity) {
+            handleEntity.onMouseDown(x, y);
+        }
+
+        this.onMouseDown(x, y, handleEntity);
+    }
+
+    _onMouseUp(x, y) {
+        let handleEntity = this._getHandleEntity(x, y);
+
+        if (handleEntity) {
+            handleEntity.onMouseUp(x, y);
+        }
+
+        this.onMouseUp(x, y, handleEntity);
+    }
+
+    _onMouseMove(x, y) {
+        let entities = this.getEntities();
+        let cursorInsideEntitiesByFrame = {};
+        Object.values(entities).forEach((entity) => {
+            if (this._checkCollision(x, y, entity)) {
+                cursorInsideEntitiesByFrame[entity.getName()] = entity;
+            }
+        });
+
+        for (let entityName in cursorInsideEntitiesByFrame) {
+            if (this._cursorInsideEntities[entityName] === undefined) {
+                cursorInsideEntitiesByFrame[entityName].onMouseOver(x, y);
+            }
+        }
+
+        for (let entityName in this._cursorInsideEntities) {
+            if (cursorInsideEntitiesByFrame[entityName] === undefined) {
+                this._cursorInsideEntities[entityName].onMouseOut(x, y);
+            }
+        }
+
+        this._cursorInsideEntities = cursorInsideEntitiesByFrame;
+
+        Object.values(this._cursorInsideEntities).forEach((entity) => {
+            entity.onMouseMove(x, y);
+        });
+
+        this.onMouseMove(x, y);
+    }
+
+    _onKeyDown(event) {
         let entities = this.getEntities();
         Object.values(entities).forEach((entity) => {
-            if (this.checkCollision(x, y, entity)) {
-                if (handleEntity === null || this.checkDepth(handleEntity, entity)) {
+            entity.onKeyDown(event);
+        });
+
+        this.onKeyDown(event);
+    }
+
+    _onKeyPress(event) {
+        let entities = this.getEntities();
+        Object.values(entities).forEach((entity) => {
+            entity.onKeyPress(event);
+        });
+
+        this.onKeyPress(event);
+    }
+
+    _onKeyUp(event) {
+        let entities = this.getEntities();
+        Object.values(entities).forEach((entity) => {
+            entity.onKeyUp(event);
+        });
+
+        this.onKeyUp(event);
+    }
+
+    _getHandleEntity(x, y) {
+        let handleEntity = null;
+        let entities = this.getEntities();
+        Object.values(entities).forEach((entity) => {
+            if (this._checkCollision(x, y, entity)) {
+                if (handleEntity === null || this._checkDepth(handleEntity, entity)) {
                     handleEntity = entity;
                 }
             }
         });
 
-        this.handleClick(x, y, handleEntity);
+        return handleEntity;
     }
 
-    checkCollision(x, y, entity) {
+    _checkCollision(x, y, entity) {
         return x >= entity.x && x <= entity.x + entity.w
             && y >= entity.y && y <= entity.y + entity.h;
     }
 
-    checkDepth(handleEntity, entity) {
+    _checkDepth(handleEntity, entity) {
         return handleEntity.depth < entity.depth && handleEntity.layer.depth <= entity.layer.depth;
-    }
-
-    handleClick(x, y, entity) {
-        throw new Error("Method is not implemented");
     }
 }

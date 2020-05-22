@@ -26,4 +26,14 @@ export class Entity {
     destroy() {
         throw new Error('method is not implemented');
     }
+
+    onClick(x, y) {}
+    onMouseDown(x, y) {}
+    onMouseUp(x, y) {}
+    onMouseMove(x, y) {}
+    onMouseOver(x, y) {}
+    onMouseOut(x, y) {}
+    onKeyDown(event) {}
+    onKeyPress(event) {}
+    onKeyUp(event) {}
 }

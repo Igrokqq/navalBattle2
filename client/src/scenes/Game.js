@@ -3,10 +3,9 @@ import { Logger } from '../core/Logger';
 import { Square } from '../entities/Square';
 import { Ship } from '../entities/Ship';
 import {FpsText} from "../entities/FpsText";
+import {Utility} from "../core/Utility";
 
 export class Game extends Scene {
-    // here private methods
-
     prepare() {
         Logger.debug('Our game');
         this.layers = {
@@ -15,22 +14,8 @@ export class Game extends Scene {
         };
         this.cubeIndex = 0;
 
-        const cube1 = new Square('black_cube', 10, 10, 40);
-        const cube2 = new Square('yellow_cube', 14, 14, 40, '#fcba03');
-        const cube4 = new Square('purple_cube', 22, 22, 40, '#be42eb');
-        const cube5 = new Square('aqua_cube', 26, 26, 40, '#1dd1ce');
-        const cube3 = new Square('green_cube', 18, 18, 40, '#29f705');
-
         const ship1 = new Ship('vertical_ship', 100, 100, 40, 'vertical');
         const ship2 = new Ship('horizontal_ship', 200, 100, 40, 'horizontal');
-
-        this.addEntity(cube1, this.layers.userMap);
-        this.addEntity(cube2, this.layers.userMap);
-
-        this.addEntity(cube4, this.layers.userMap);
-        this.addEntity(cube3, this.layers.userMap);
-
-        this.addEntity(cube5, this.layers.background);
 
         // our ship
         this.addEntity(ship1, this.layers.userMap);
@@ -46,18 +31,17 @@ export class Game extends Scene {
         this.drawFps();
     }
 
-    handleClick(x, y, entity) {
-        if (entity) {
-            entity.color = this.getRandomColor();
+    onClick(x, y, entity) {
+        if (!entity) {
+            for (let i = 0; i < 30; i++) {
+                let _x = Math.ceil(Math.random()*800);
+                let _y = Math.ceil(Math.random()*700);
+                let _size = 20 + Math.ceil(Math.random()*100);
+                let cube = new Square(`number${this.cubeIndex}_cube`, _x, _y, _size, Utility.getRandomColor());
+                this.addEntity(cube, this.layers.userMap);
 
-            if (entity instanceof Ship) {
-                entity.togglePosition();
+                this.cubeIndex++;
             }
-        } else {
-            let cube = new Square(`number${this.cubeIndex}_cube`, x, y, 20, this.getRandomColor());
-            this.addEntity(cube, this.layers.userMap);
-
-            this.cubeIndex++;
         }
     }
 
@@ -70,14 +54,5 @@ export class Game extends Scene {
         this.fps = this.times.length;
 
         this.getEntity('fps_text').setText('FPS: ' + this.fps);
-    }
-
-    getRandomColor() {
-        let letters = '0123456789ABCDEF';
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
     }
 }

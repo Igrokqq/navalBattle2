@@ -1,4 +1,5 @@
 import { Entity } from '../core/Entity';
+import {Utility} from "../core/Utility";
 
 export class Ship extends Entity {
     constructor(name, x, y, size, position) {
@@ -23,7 +24,12 @@ export class Ship extends Entity {
         context.fillRect(this.x, this.y, this.w, this.h);
     }
 
-    togglePosition() {
+    onClick(x, y) {
+        this.color = Utility.getRandomColor();
+        this._togglePosition();
+    }
+
+    _togglePosition() {
         if (this.position === 'horizontal') {
             this.position = 'vertical';
         } else {

@@ -17,29 +17,24 @@ export class Engine {
 
         let _scene = this._scenesMap[scene]();
 
-        // _scene.setEngine(this);
-
         this._currentScene = _scene;
 
         _scene.clear();
         _scene.prepare();
 
-        this.gameLoop();
-        // setInterval(() => {
-        //     this.gameLoop();
-        // }, 1000 / 30);
+        this._gameLoop();
     }
 
-    gameLoop() {
-        this.clearSceneLayers(this._currentScene);
+    _gameLoop() {
+        this._clearSceneLayers(this._currentScene);
 
-        const entities = this.sortEntitiesByDepth(this._currentScene.getEntities());
+        const entities = this._sortEntitiesByDepth(this._currentScene.getEntities());
 
         entities.forEach((entity) => entity.draw());
 
         this._currentScene.update();
 
-        window.requestAnimationFrame(() => { this.gameLoop() });
+        window.requestAnimationFrame(() => { this._gameLoop() });
     }
 
     getCurrentScene() {
@@ -50,16 +45,7 @@ export class Engine {
         this._scenesMap = scenes;
     }
 
-    // // for test
-    // debug() {
-    //     debugger;
-    // }
-
-    getAllScenes() {
-        return this._scenesMap;
-    }
-
-    sortEntitiesByDepth(entities) {
+    _sortEntitiesByDepth(entities) {
         return Object.values(entities).sort((entity1, entity2) => {
             if (entity1.depth < entity2.depth) {
                 return -1;
@@ -72,7 +58,7 @@ export class Engine {
         });
     }
 
-    clearSceneLayers(scene) {
+    _clearSceneLayers(scene) {
         const layers = Object.values(scene.getLayers());
 
         layers.forEach((layer) => {
