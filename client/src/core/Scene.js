@@ -33,7 +33,7 @@ export class Scene {
     initDebug() {
         this.addLayer(this._debugInfo.layerName);
 
-        let fpsText = new FpsText('fps_text', 20, 20);
+        let fpsText = new FpsText('fps_text', 10, 10);
         this.addEntity(fpsText, this.getLayer(this._debugInfo.layerName));
     }
 
@@ -101,7 +101,7 @@ export class Scene {
 
         this._entityDepthCount += 1;
 
-        entity.depth = this._entityDepthCount;
+        entity.setDepth(this._entityDepthCount);
 
         this._entities[entity.getName()] = entity;
     }
@@ -160,12 +160,14 @@ export class Scene {
 
         for (let entityName in cursorInsideEntitiesByFrame) {
             if (this._cursorInsideEntities[entityName] === undefined) {
+                cursorInsideEntitiesByFrame[entityName].triggers.mouseOver(x, y);
                 cursorInsideEntitiesByFrame[entityName].onMouseOver(x, y);
             }
         }
 
         for (let entityName in this._cursorInsideEntities) {
             if (cursorInsideEntitiesByFrame[entityName] === undefined) {
+                this._cursorInsideEntities[entityName].triggers.mouseOut(x, y);
                 this._cursorInsideEntities[entityName].onMouseOut(x, y);
             }
         }
@@ -173,6 +175,7 @@ export class Scene {
         this._cursorInsideEntities = cursorInsideEntitiesByFrame;
 
         Object.values(this._cursorInsideEntities).forEach((entity) => {
+            entity.triggers.mouseMove(x, y);
             entity.onMouseMove(x, y);
         });
 
@@ -221,12 +224,12 @@ export class Scene {
     }
 
     _checkCollision(x, y, entity) {
-        return x >= entity.x && x <= entity.x + entity.w
-            && y >= entity.y && y <= entity.y + entity.h;
+        return x >= entity.getX() && x <= entity.getX() + entity.getW()
+            && y >= entity.getY() && y <= entity.getY() + entity.getH();
     }
 
     _checkDepth(handleEntity, entity) {
-        return handleEntity.depth < entity.depth && handleEntity.layer.depth <= entity.layer.depth;
+        return handleEntity.getDepth() < entity.getDepth() && handleEntity.getLayer().depth <= entity.getLayer().depth;
     }
 
     _drawFps() {

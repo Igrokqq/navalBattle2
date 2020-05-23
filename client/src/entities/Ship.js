@@ -1,39 +1,75 @@
 import { Entity } from '../core/Entity';
 import {Utility} from "../core/Utility";
+import {SHIP_STATE} from "../enums/ShipState";
+import {SHIP_POSITION} from "../enums/ShipPosition";
 
 export class Ship extends Entity {
-    constructor(name, x, y, size, position) {
+    constructor(name, x, y, shipSize, shipCount) {
         super();
-        this.name = name;
-        this.x = x;
-        this.y = y;
-        this.w = this.position === 'horizontal' ? this.size * 2 : this.size;
-        this.h = this.position === 'vertical' ? this.size * 2 : this.size;
-        this.position = position;
-        this.size = size;
-        this.color = '#ff2631';
+
+        this._oneFieldSize = 32;
+
+        this.setName(name);
+        this.setX(x);
+        this.setY(y);
+        this.setW(shipSize * this._oneFieldSize);
+        this.setH(this._oneFieldSize);
+
+        this._size = shipSize;
+        this._count = shipCount;
+        this._color = Utility.getRandomColor();
+        this._state = SHIP_STATE.DISPLAY_IN_MENU;
+        this._position = SHIP_POSITION.HORIZONTAL;
     }
 
     draw() {
-        const { context } = this.layer;
+        const { context } = this.getLayer();
 
-        this.w = this.position === 'horizontal' ? this.size * 2 : this.size;
-        this.h = this.position === 'vertical' ? this.size * 2 : this.size;
+        context.fillStyle = this._color;
+        context.fillRect(this.getX(), this.getY(), this.getW(), this.getH());
+    }
 
-        context.fillStyle = this.color;
-        context.fillRect(this.x, this.y, this.w, this.h);
+    onKeyPress(event) {
+        if (event.code === 'KeyR' && this._state === SHIP_STATE.PICKED_UP) {
+            this._position = this._position === SHIP_POSITION.VERTICAL ?
+                                SHIP_POSITION.HORIZONTAL : SHIP_POSITION.VERTICAL;
+
+            if (this._position === SHIP_POSITION.HORIZONTAL) {
+                this.setW(this._size * this._oneFieldSize);
+                this.setH(this._oneFieldSize);
+            } else {
+                this.setW(this._oneFieldSize);
+                this.setH(this._size * this._oneFieldSize);
+            }
+        }
     }
 
     onClick(x, y) {
-        this.color = Utility.getRandomColor();
-        this._togglePosition();
+
     }
 
-    _togglePosition() {
-        if (this.position === 'horizontal') {
-            this.position = 'vertical';
-        } else {
-            this.position = 'horizontal';
-        }
+    onMouseOver(x, y) {
+        Utility.setCursor('pointer');
     }
+
+    onMouseOut(x, y) {
+        Utility.setCursor('default');
+    }
+
+    setState(state) {
+        this._state = state;
+    }
+
+    getState() {
+        return this._state;
+    }
+
+    getSize() {
+        return this._size;
+    }
+
+    getCount() {
+        return this._count;
+    }
+
 }

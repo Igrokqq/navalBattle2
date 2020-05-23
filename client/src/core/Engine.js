@@ -50,10 +50,10 @@ export class Engine {
 
     _sortEntitiesByDepth(entities) {
         return Object.values(entities).sort((entity1, entity2) => {
-            if (entity1.depth < entity2.depth) {
+            if (entity1.getDepth() < entity2.getDepth()) {
                 return -1;
             }
-            if (entity1.depth > entity2.depth) {
+            if (entity1.getDepth() > entity2.getDepth()) {
                 return 1;
             }
 
