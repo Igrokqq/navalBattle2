@@ -1,4 +1,5 @@
 import {Entity} from "../core/Entity";
+import {SEA_FIELD_STATE} from "../enums/SeaFieldState";
 
 export class SeaField extends Entity {
     constructor(name, x, y, tileSize, tileCount) {
@@ -12,6 +13,7 @@ export class SeaField extends Entity {
 
         this._tileSize = tileSize;
         this._tileCount = tileCount;
+        this._state = SEA_FIELD_STATE.PREPARE;
 
         this.triggers.mouseMove = this._triggerMouseMove.bind(this);
     }
@@ -26,6 +28,10 @@ export class SeaField extends Entity {
         this._drawHorizontalLines(context, lineConfig);
         lineConfig.y = this.getY();
         this._drawVerticalLines(context, lineConfig);
+    }
+
+    onClick(x, y) {
+
     }
 
     _drawHorizontalLines(context, lineConfig) {

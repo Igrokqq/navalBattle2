@@ -95,7 +95,7 @@ export class Game extends Scene {
     }
 
     _takeObject(entity) {
-        if (entity === null || !(entity instanceof Ship)) {
+        if (entity === null || !(entity instanceof Ship) || entity.getState() !== SHIP_STATE.DISPLAY_IN_MENU) {
             return;
         }
 
