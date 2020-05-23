@@ -160,12 +160,14 @@ export class Scene {
 
         for (let entityName in cursorInsideEntitiesByFrame) {
             if (this._cursorInsideEntities[entityName] === undefined) {
+                cursorInsideEntitiesByFrame[entityName].triggers.mouseOver(x, y);
                 cursorInsideEntitiesByFrame[entityName].onMouseOver(x, y);
             }
         }
 
         for (let entityName in this._cursorInsideEntities) {
             if (cursorInsideEntitiesByFrame[entityName] === undefined) {
+                this._cursorInsideEntities[entityName].triggers.mouseOut(x, y);
                 this._cursorInsideEntities[entityName].onMouseOut(x, y);
             }
         }
@@ -173,6 +175,7 @@ export class Scene {
         this._cursorInsideEntities = cursorInsideEntitiesByFrame;
 
         Object.values(this._cursorInsideEntities).forEach((entity) => {
+            entity.triggers.mouseMove(x, y);
             entity.onMouseMove(x, y);
         });
 

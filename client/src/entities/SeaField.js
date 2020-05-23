@@ -12,6 +12,8 @@ export class SeaField extends Entity {
 
         this._tileSize = tileSize;
         this._tileCount = tileCount;
+
+        this.triggers.mouseMove = this._triggerMouseMove.bind(this);
     }
 
     draw() {
@@ -31,6 +33,7 @@ export class SeaField extends Entity {
             context.beginPath();
             context.moveTo(lineConfig.x, lineConfig.y);
             context.lineTo(lineConfig.x + this._tileSize * this._tileCount, lineConfig.y);
+            context.strokeStyle = '#999';
             context.stroke();
 
             this._drawLineNumber(context, lineConfig, y);
@@ -44,6 +47,7 @@ export class SeaField extends Entity {
             context.beginPath();
             context.moveTo(lineConfig.x, lineConfig.y);
             context.lineTo(lineConfig.x , lineConfig.y + this._tileSize * this._tileCount);
+            context.strokeStyle = '#999';
             context.stroke();
 
             this._drawColumnAlphabet(context, lineConfig, x);
@@ -76,6 +80,24 @@ export class SeaField extends Entity {
         context.textBaseline = 'top';
 
         let columnLetter = String.fromCharCode(64 + x + 1);
-        context.fillText(columnLetter, lineConfig.x + 10, lineConfig.y - 16);
+        context.fillText(columnLetter, lineConfig.x + 12, lineConfig.y - 16);
+    }
+
+    _triggerMouseMove(x, y) {
+        let localPosition = this.convertToLocalPosition(x, y);
+        let tileX = Math.floor(localPosition.x / this._tileSize) * this._tileSize;
+        let tileY = Math.floor(localPosition.y / this._tileSize) * this._tileSize;
+        let tileBorderX = this.getW();
+        let tileBorderY = this.getH();
+
+        let globalPosition = this.convertToGlobalPosition(tileX, tileY);
+        let globalBorderPosition = this.convertToGlobalPosition(tileBorderX, tileBorderY);
+
+        this.handlers.mouseMove(
+            globalPosition.x,
+            globalPosition.y,
+            globalBorderPosition.x,
+            globalBorderPosition.y
+        );
     }
 }

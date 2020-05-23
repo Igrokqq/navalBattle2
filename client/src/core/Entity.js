@@ -9,6 +9,31 @@ export class Entity {
         this._name = null;
         this._layer = null;
         this._depth = 0;
+
+        this.triggers = {
+            mouseOver: () => { this.handlers.mouseOver.bind(this)(); },
+            mouseOut: () => { this.handlers.mouseOut.bind(this)(); },
+            mouseMove: () => { this.handlers.mouseMove.bind(this)(); },
+        };
+        this.handlers = {
+            mouseOver: () => {},
+            mouseOut: () => {},
+            mouseMove: () => {},
+        };
+    }
+
+    convertToLocalPosition(containerX, containerY) {
+        return {
+            x: containerX - this.getX(),
+            y: containerY - this.getY()
+        };
+    }
+
+    convertToGlobalPosition(localX, localY) {
+        return {
+            x: localX + this.getX(),
+            y: localY + this.getY()
+        };
     }
 
     draw() {
