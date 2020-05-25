@@ -20,13 +20,26 @@ export class Ship extends Entity {
         this._color = Utility.getRandomColor();
         this._state = SHIP_STATE.DISPLAY_IN_MENU;
         this._position = SHIP_POSITION.HORIZONTAL;
+        this._canPut = true;
     }
 
     draw() {
         const { context } = this.getLayer();
 
         context.fillStyle = this._color;
+
+        if (this._state === SHIP_STATE.PICKED_UP) {
+            context.shadowBlur = 10;
+            context.shadowColor = this._canPut ? '#1d8b37' : '#ef263d';
+            context.shadowOffsetX = 0;
+            context.shadowOffsetY = 0;
+        }
+
         context.fillRect(this.getX(), this.getY(), this.getW(), this.getH());
+
+        if (this._state === SHIP_STATE.DISPLAY_IN_MENU && this._count === 0) {
+            this._crossOutShip(context);
+        }
     }
 
     onKeyPress(event) {
@@ -56,6 +69,14 @@ export class Ship extends Entity {
         Utility.setCursor('default');
     }
 
+    getCanPut() {
+        return this._canPut;
+    }
+
+    setCanPut(canPut) {
+        this._canPut = canPut;
+    }
+
     setState(state) {
         this._state = state;
     }
@@ -72,4 +93,33 @@ export class Ship extends Entity {
         return this._count;
     }
 
+    decreaseCount() {
+        this._count--;
+    }
+
+    getCoords() {
+        let coords = [];
+        for (let i = 0; i < this.getSize(); i++) {
+            coords.push({
+                x: this._position === SHIP_POSITION.HORIZONTAL ? this.getX() + (i * this._oneFieldSize) : this.getX(),
+                y: this._position === SHIP_POSITION.VERTICAL ? this.getY() + (i * this._oneFieldSize) : this.getY()
+            });
+        }
+
+        return coords;
+    }
+
+    _crossOutShip(context) {
+        context.beginPath();
+        context.moveTo(this.getX(), this.getY());
+        context.lineTo(this.getX() + this.getW(), this.getY() + this.getH());
+        context.strokeStyle = '#000';
+        context.stroke();
+
+        context.beginPath();
+        context.moveTo(this.getX(), this.getY() + this.getH());
+        context.lineTo(this.getX() + this.getW(), this.getY());
+        context.strokeStyle = '#000';
+        context.stroke();
+    }
 }

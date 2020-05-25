@@ -28,4 +28,8 @@ export class ShipInfo extends Entity {
     setShipCount(shipCount) {
         this._shipCount = shipCount;
     }
+
+    getShipCount() {
+        return this._shipCount;
+    }
 }

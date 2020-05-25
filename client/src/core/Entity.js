@@ -9,6 +9,7 @@ export class Entity {
         this._name = null;
         this._layer = null;
         this._depth = 0;
+        this._parent = null;
 
         this.triggers = {
             mouseOver: () => { this.handlers.mouseOver.bind(this)(); },
@@ -94,6 +95,14 @@ export class Entity {
 
     getDepth() {
         return this._depth;
+    }
+
+    setParent(parent) {
+        this._parent = parent;
+    }
+
+    getParent() {
+        return this._parent;
     }
 
     destroy() {}

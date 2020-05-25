@@ -11,6 +11,8 @@ export class SeaField extends Entity {
         this.setW(tileSize * tileCount);
         this.setH(tileSize * tileCount);
 
+        this._positionObjects = [];
+
         this._tileSize = tileSize;
         this._tileCount = tileCount;
         this._state = SEA_FIELD_STATE.PREPARE;
@@ -32,6 +34,44 @@ export class SeaField extends Entity {
 
     onClick(x, y) {
 
+    }
+
+    getShipCount() {
+        return this._positionObjects.length;
+    }
+
+    setShip(ship) {
+        let shipCoords = ship.getCoords();
+        let obj = {
+            coords: shipCoords,
+            collisionCoords: this._getCollisionCoords(shipCoords)
+        };
+        this._positionObjects.push(obj);
+    }
+
+    checkCollision(entity) {
+        if (this._positionObjects.length === 0) {
+            return false;
+        }
+
+        let result = false;
+        let entityCoords = entity.getCoords();
+
+        for (let i = 0; i < this._positionObjects.length; i++) {
+            let objCoords = this._positionObjects[i].collisionCoords;
+
+            if (objCoords.filter(coords =>
+                    entityCoords.filter(coords2 =>
+                        coords.x === coords2.x && coords.y === coords2.y
+                    ).length > 0
+                ).length > 0
+            ) {
+                result = true;
+                break;
+            }
+        }
+
+        return result;
     }
 
     _drawHorizontalLines(context, lineConfig) {
@@ -100,10 +140,123 @@ export class SeaField extends Entity {
         let globalBorderPosition = this.convertToGlobalPosition(tileBorderX, tileBorderY);
 
         this.handlers.mouseMove(
+            this,
             globalPosition.x,
             globalPosition.y,
             globalBorderPosition.x,
             globalBorderPosition.y
         );
+    }
+
+    _getCollisionCoords(shipCoords) {
+        let coords = [];
+
+        for (let i = 0; i < shipCoords.length; i++) {
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            // |   | | x | |   |
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            coords.push({
+                x: shipCoords[i].x,
+                y: shipCoords[i].y,
+            });
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            // |   | |   | | x |
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            coords.push({
+                x: shipCoords[i].x + this._tileSize,
+                y: shipCoords[i].y,
+            });
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            // | x | |   | |   |
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            coords.push({
+                x: shipCoords[i].x - this._tileSize,
+                y: shipCoords[i].y,
+            });
+            // ----- ----- -----
+            // |   | | x | |   |
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            coords.push({
+                x: shipCoords[i].x,
+                y: shipCoords[i].y - this._tileSize,
+            });
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            // |   | | x | |   |
+            // ----- ----- -----
+            coords.push({
+                x: shipCoords[i].x,
+                y: shipCoords[i].y + this._tileSize,
+            });
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            // |   | |   | | x |
+            // ----- ----- -----
+            coords.push({
+                x: shipCoords[i].x + this._tileSize,
+                y: shipCoords[i].y + this._tileSize,
+            });
+            // ----- ----- -----
+            // |   | |   | | x |
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            coords.push({
+                x: shipCoords[i].x + this._tileSize,
+                y: shipCoords[i].y - this._tileSize,
+            });
+            // ----- ----- -----
+            // | x | |   | |   |
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            coords.push({
+                x: shipCoords[i].x - this._tileSize,
+                y: shipCoords[i].y - this._tileSize,
+            });
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            // |   | |   | |   |
+            // ----- ----- -----
+            // | x | |   | |   |
+            // ----- ----- -----
+            coords.push({
+                x: shipCoords[i].x - this._tileSize,
+                y: shipCoords[i].y + this._tileSize,
+            });
+        }
+
+        return coords.filter((value, index, self) => {
+            return index === self.findIndex((t) => (
+                t.x === value.x && t.y === value.y
+            ));
+        });
     }
 }

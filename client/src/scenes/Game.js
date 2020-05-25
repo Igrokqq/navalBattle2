@@ -57,7 +57,11 @@ export class Game extends Scene {
             this._clearHand();
         }
 
-        this._takeObject(entity);
+        if (this._isFreeShip(entity)) {
+            this._takeObject(entity);
+        } else if (this._isPickedShip(entity) && !this.getEntity('seaField').checkCollision(this._hand)) {
+            this._putOnTheField(entity);
+        }
     }
 
     onMouseMove(x, y) {
@@ -71,7 +75,7 @@ export class Game extends Scene {
         }
     }
 
-    _moveObjectInHand(tileX, tileY, tileBorderX, tileBorderY) {
+    _moveObjectInHand(seaFieldEntity, tileX, tileY, tileBorderX, tileBorderY) {
         if (this._hand) {
             if (this._hand.getW() + tileX <= tileBorderX) {
                 this._hand.setX(tileX);
@@ -84,6 +88,8 @@ export class Game extends Scene {
             } else {
                 this._hand.setY(tileBorderY - this._hand.getH());
             }
+
+            this._hand.setCanPut(!seaFieldEntity.checkCollision(this._hand));
         }
     }
 
@@ -95,10 +101,6 @@ export class Game extends Scene {
     }
 
     _takeObject(entity) {
-        if (entity === null || !(entity instanceof Ship) || entity.getState() !== SHIP_STATE.DISPLAY_IN_MENU) {
-            return;
-        }
-
         this._clearHand();
 
         let objectInHand = Utility.cloneEntity(entity);
@@ -127,5 +129,50 @@ export class Game extends Scene {
         if (this._hand) {
             this.destroyEntity(this._hand);
         }
+    }
+
+    _isFreeShip(entity) {
+        if (entity === null) {
+            return false;
+        }
+
+        if (!(entity instanceof Ship)) {
+            return false;
+        }
+
+        return entity.getState() === SHIP_STATE.DISPLAY_IN_MENU && entity.getCount() > 0;
+    }
+
+    _isPickedShip(entity) {
+        if (entity === null) {
+            return false;
+        }
+
+        if (!(entity instanceof Ship)) {
+            return false;
+        }
+
+        return entity.getState() === SHIP_STATE.PICKED_UP;
+    }
+
+    _putOnTheField(entity) {
+        let shipCountLabel = this.getEntity(`shipInfo${entity.getSize()}`);
+        if (shipCountLabel.getShipCount() === 0) {
+            return;
+        }
+
+        entity.getParent().decreaseCount();
+        shipCountLabel.setShipCount(entity.getParent().getCount());
+
+        let ship = Utility.cloneEntity(entity);
+        let number = this.getEntity('seaField').getShipCount();
+
+        ship.setState(SHIP_STATE.PUT_ON_FIELD);
+        ship.setName(`shipOnField_${number}`);
+        this.addEntity(ship, this.layers.userMap);
+
+        this.getEntity('seaField').setShip(entity);
+
+        this._clearHand();
     }
 }
