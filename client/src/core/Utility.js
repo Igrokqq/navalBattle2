@@ -13,6 +13,9 @@ export class Utility {
     }
 
     static cloneEntity(entity) {
-        return Object.assign( Object.create( Object.getPrototypeOf(entity)), entity);
+        let newEntity = Object.assign( Object.create( Object.getPrototypeOf(entity)), entity);
+        newEntity.setParent(entity);
+
+        return newEntity;
     }
 }

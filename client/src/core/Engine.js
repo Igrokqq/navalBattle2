@@ -31,7 +31,11 @@ export class Engine {
 
         const entities = this._sortEntitiesByDepth(this._currentScene.getEntities());
 
-        entities.forEach((entity) => entity.draw());
+        entities.forEach((entity) => {
+            entity.getLayer().context.save();
+            entity.draw();
+            entity.getLayer().context.restore();
+        });
 
         this._currentScene._drawFps();
 
