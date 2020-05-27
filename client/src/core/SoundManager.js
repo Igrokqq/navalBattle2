@@ -35,6 +35,7 @@ export class SoundManager {
 
     stop(hash) {
         this._sources[hash].bufferSource.stop();
+        this._sources[hash].isPlaying = false;
     }
 
     stopAll() {
