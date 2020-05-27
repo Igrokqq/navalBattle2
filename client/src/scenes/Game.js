@@ -6,6 +6,7 @@ import {ShipInfo as ShipInfoForMenu} from "../entities/ship_menu/ShipInfo";
 import {Utility} from "../core/Utility";
 import {SeaField} from "../entities/SeaField";
 import {SHIP_STATE} from "../enums/ShipState";
+import {BtnBackgroundSoundSwitcher} from "../entities/BtnBackgroundSoundSwitcher";
 
 export class Game extends Scene {
     prepare() {
@@ -17,6 +18,8 @@ export class Game extends Scene {
         this._hand = null;
         this._x = 0;
         this._y = 0;
+        this.soundManager = this.getSoundManager();
+        this.bgSoundsCantBePlayed = true;
 
         let areaForSelectedObject = new AreaForSelectedObject('areaForSelectedObject', 10, 40);
         this.addEntity(areaForSelectedObject, this.layers.userMap);
@@ -46,6 +49,16 @@ export class Game extends Scene {
         seaField.handlers.mouseOut = this._hideObjectInHand.bind(this);
 
         this.addEntity(seaField, this.layers.background);
+
+        let btnBackgroundSoundSwitcher = new BtnBackgroundSoundSwitcher(
+            'btnBackgroundSoundSwitcher',
+            seaField.getW() * 2 + 20,
+            seaField.getY(),
+            'Allow sounds',
+            '#ccc',
+        );
+
+        this.addEntity(btnBackgroundSoundSwitcher, this.layers.background);
     }
 
     update() {
@@ -59,8 +72,26 @@ export class Game extends Scene {
 
         if (this._isFreeShip(entity)) {
             this._takeObject(entity);
+
+            const refToSound = this.soundManager.play(this.soundManager.getSounds().pressedByShip);
+
+            setTimeout(() => this.soundManager.stop(refToSound), 2000);
         } else if (this._isPickedShip(entity) && !this.getEntity('seaField').checkCollision(this._hand)) {
             this._putOnTheField(entity);
+
+            const refToSound = this.soundManager.play(this.soundManager.getSounds().putTheShip);
+
+            setTimeout(() => this.soundManager.stop(refToSound), 2000);
+        }
+
+        if (this._isBtnBackgroundSoundSwitcher(entity) && !this.bgSoundsCantBePlayed) {
+            this.bgSoundsCantBePlayed = true;
+
+            this.soundManager.stopAll();
+        } else if (this._isBtnBackgroundSoundSwitcher(entity) && this.bgSoundsCantBePlayed) {
+            this.bgSoundsCantBePlayed = false;
+
+            this.soundManager.play(this.soundManager.getSounds().background);
         }
     }
 
@@ -174,5 +205,17 @@ export class Game extends Scene {
         this.getEntity('seaField').setShip(entity);
 
         this._clearHand();
+    }
+
+    _isBtnBackgroundSoundSwitcher(entity) {
+        if (entity === null) {
+            return false;
+        }
+
+        if (!(entity instanceof BtnBackgroundSoundSwitcher)) {
+            return false;
+        }
+
+        return true;
     }
 }
