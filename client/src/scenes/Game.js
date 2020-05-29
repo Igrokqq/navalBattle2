@@ -1,12 +1,13 @@
 import { Scene } from '../core/Scene';
 import { Logger } from '../core/Logger';
-import {AreaForSelectedObject} from "../entities/ship_menu/AreaForSelectedObject";
-import {Ship} from "../entities/Ship";
-import {ShipInfo as ShipInfoForMenu} from "../entities/ship_menu/ShipInfo";
-import {Utility} from "../core/Utility";
-import {SeaField} from "../entities/SeaField";
-import {SHIP_STATE} from "../enums/ShipState";
-import {BtnBackgroundSoundSwitcher} from "../entities/BtnBackgroundSoundSwitcher";
+import {AreaForSelectedObject} from '../entities/ship_menu/AreaForSelectedObject';
+import {Ship} from '../entities/Ship';
+import {ShipInfo as ShipInfoForMenu} from '../entities/ship_menu/ShipInfo';
+import {Utility} from '../core/Utility';
+import {SeaField} from '../entities/SeaField';
+import {SHIP_STATE} from '../enums/ShipState';
+import {BtnBackgroundSoundSwitcher} from '../entities/BtnBackgroundSoundSwitcher';
+import { GAME_SOUNDS } from '../enums/GameSounds';
 
 export class Game extends Scene {
     prepare() {
@@ -73,13 +74,13 @@ export class Game extends Scene {
         if (this._isFreeShip(entity)) {
             this._takeObject(entity);
 
-            const refToSound = this.soundManager.play(this.soundManager.getSounds().pressedByShip);
+            const refToSound = this.soundManager.play(GAME_SOUNDS.pressedByShip);
 
             setTimeout(() => this.soundManager.stop(refToSound), 2000);
         } else if (this._isPickedShip(entity) && !this.getEntity('seaField').checkCollision(this._hand)) {
             this._putOnTheField(entity);
 
-            const refToSound = this.soundManager.play(this.soundManager.getSounds().putTheShip);
+            const refToSound = this.soundManager.play(GAME_SOUNDS.putTheShip);
 
             setTimeout(() => this.soundManager.stop(refToSound), 2000);
         }
@@ -91,7 +92,7 @@ export class Game extends Scene {
         } else if (this._isBtnBackgroundSoundSwitcher(entity) && this.bgSoundsCantBePlayed) {
             this.bgSoundsCantBePlayed = false;
 
-            this.soundManager.play(this.soundManager.getSounds().background);
+            this.soundManager.play(GAME_SOUNDS.background);
         }
     }
 
@@ -212,10 +213,6 @@ export class Game extends Scene {
             return false;
         }
 
-        if (!(entity instanceof BtnBackgroundSoundSwitcher)) {
-            return false;
-        }
-
-        return true;
+        return entity instanceof BtnBackgroundSoundSwitcher;
     }
 }

@@ -6,14 +6,6 @@ export class Engine {
         this._scenesMap = {};
         this._currentScene = null;
 
-        // test
-        // setInterval(() => {
-        //     // this._sound.play('https://s3-us-west-2.amazonaws.com/s.cdpn.io/123941/Yodel_Sound_Effect.mp3');
-        //     this._sound.play('http://localhost:63342/navalBattleWithZhenya/client/public/sounds/1.mp3');
-        //     // this._sound.play('http://localhost:63342/navalBattleWithZhenya/client/public/sounds/2.mp3');
-        //     // this._sound.play('http://localhost:63342/navalBattleWithZhenya/client/public/sounds/3.mp3');
-        // }, 1500);
-
         new EventManager(this);
     }
 
@@ -58,10 +50,6 @@ export class Engine {
 
     setScenes(scenes) {
         this._scenesMap = scenes;
-    }
-
-    getSound() {
-        return this._sound;
     }
 
     _sortEntitiesByDepth(entities) {
