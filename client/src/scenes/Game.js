@@ -6,12 +6,11 @@ import {ShipInfo as ShipInfoForMenu} from '../entities/ship_menu/ShipInfo';
 import {Utility} from '../core/Utility';
 import {SeaField} from '../entities/SeaField';
 import {SHIP_STATE} from '../enums/ShipState';
-import {BtnBackgroundSoundSwitcher} from '../entities/BtnBackgroundSoundSwitcher';
-import { GAME_SOUNDS } from '../enums/GameSounds';
 
 export class Game extends Scene {
     prepare() {
         Logger.debug('Our game');
+
         this.layers = {
             background: this.addLayer('background'),
             userMap: this.addLayer('userMap')
@@ -19,8 +18,6 @@ export class Game extends Scene {
         this._hand = null;
         this._x = 0;
         this._y = 0;
-        this.soundManager = this.getSoundManager();
-        this.bgSoundsCantBePlayed = true;
 
         let areaForSelectedObject = new AreaForSelectedObject('areaForSelectedObject', 10, 40);
         this.addEntity(areaForSelectedObject, this.layers.userMap);
@@ -50,16 +47,6 @@ export class Game extends Scene {
         seaField.handlers.mouseOut = this._hideObjectInHand.bind(this);
 
         this.addEntity(seaField, this.layers.background);
-
-        let btnBackgroundSoundSwitcher = new BtnBackgroundSoundSwitcher(
-            'btnBackgroundSoundSwitcher',
-            seaField.getW() * 2 + 20,
-            seaField.getY(),
-            'Allow sounds',
-            '#ccc',
-        );
-
-        this.addEntity(btnBackgroundSoundSwitcher, this.layers.background);
     }
 
     update() {
@@ -73,26 +60,10 @@ export class Game extends Scene {
 
         if (this._isFreeShip(entity)) {
             this._takeObject(entity);
-
-            const refToSound = this.soundManager.play(GAME_SOUNDS.pressedByShip);
-
-            setTimeout(() => this.soundManager.stop(refToSound), 2000);
         } else if (this._isPickedShip(entity) && !this.getEntity('seaField').checkCollision(this._hand)) {
             this._putOnTheField(entity);
-
-            const refToSound = this.soundManager.play(GAME_SOUNDS.putTheShip);
-
-            setTimeout(() => this.soundManager.stop(refToSound), 2000);
-        }
-
-        if (this._isBtnBackgroundSoundSwitcher(entity) && !this.bgSoundsCantBePlayed) {
-            this.bgSoundsCantBePlayed = true;
-
-            this.soundManager.stopAll();
-        } else if (this._isBtnBackgroundSoundSwitcher(entity) && this.bgSoundsCantBePlayed) {
-            this.bgSoundsCantBePlayed = false;
-
-            this.soundManager.play(GAME_SOUNDS.background);
+        } else if (this._isPuttedShip(entity)) {
+            this._pickUpFromField(entity);
         }
     }
 
@@ -135,27 +106,14 @@ export class Game extends Scene {
     _takeObject(entity) {
         this._clearHand();
 
-        let objectInHand = Utility.cloneEntity(entity);
-        objectInHand.setName('objectInHand');
-        objectInHand.setX(-1000);
-        objectInHand.setY(-1000);
-        objectInHand.setState(SHIP_STATE.PICKED_UP);
-        this.addEntity(objectInHand, this.layers.userMap);
-        this._hand = objectInHand;
+        this._takeInHand(entity, -1000, -1000);
 
-        let selectedObject = Utility.cloneEntity(entity);
-        selectedObject.setName('selectedObject');
-        selectedObject.setX(-1000);
-        selectedObject.setY(-1000);
-        this.addEntity(selectedObject, this.layers.userMap);
-
-        this.getEntity('areaForSelectedObject').setEntity(selectedObject);
+        this._showSelectedObject(entity);
     }
 
     _clearHand() {
-        let previousSelectedObject = this.getEntity('selectedObject');
-        if (previousSelectedObject) {
-            this.destroyEntity(previousSelectedObject);
+        if (this.hasEntity('selectedObject')) {
+            this.destroyEntity(this.getEntity('selectedObject'));
         }
 
         if (this._hand) {
@@ -164,10 +122,6 @@ export class Game extends Scene {
     }
 
     _isFreeShip(entity) {
-        if (entity === null) {
-            return false;
-        }
-
         if (!(entity instanceof Ship)) {
             return false;
         }
@@ -176,10 +130,6 @@ export class Game extends Scene {
     }
 
     _isPickedShip(entity) {
-        if (entity === null) {
-            return false;
-        }
-
         if (!(entity instanceof Ship)) {
             return false;
         }
@@ -193,26 +143,62 @@ export class Game extends Scene {
             return;
         }
 
-        entity.getParent().decreaseCount();
-        shipCountLabel.setShipCount(entity.getParent().getCount());
+        let shipEntity = this.getEntity(`ship${entity.getSize()}`);
+        shipEntity.decreaseCount();
+        shipCountLabel.setShipCount(shipEntity.getCount());
 
         let ship = Utility.cloneEntity(entity);
-        let number = this.getEntity('seaField').getShipCount();
+        let number = new Date().getTime();
 
         ship.setState(SHIP_STATE.PUT_ON_FIELD);
         ship.setName(`shipOnField_${number}`);
         this.addEntity(ship, this.layers.userMap);
 
-        this.getEntity('seaField').setShip(entity);
+        this.getEntity('seaField').addShip(ship);
 
         this._clearHand();
     }
 
-    _isBtnBackgroundSoundSwitcher(entity) {
-        if (entity === null) {
+    _isPuttedShip(entity) {
+        if (!(entity instanceof Ship)) {
             return false;
         }
 
-        return entity instanceof BtnBackgroundSoundSwitcher;
+        return entity.getState() === SHIP_STATE.PUT_ON_FIELD;
+    }
+
+    _pickUpFromField(entity) {
+        this._takeInHand(entity, entity.getX(), entity.getY());
+
+        this._showSelectedObject(entity);
+
+        this.destroyEntity(entity);
+
+        this.getEntity('seaField').removeShip(entity);
+
+        let shipCountLabel = this.getEntity(`shipInfo${entity.getSize()}`);
+        let shipEntity = this.getEntity(`ship${entity.getSize()}`);
+        shipEntity.increaseCount();
+        shipCountLabel.setShipCount(shipEntity.getCount());
+    }
+
+    _showSelectedObject(entity) {
+        let selectedObject = Utility.cloneEntity(entity);
+        selectedObject.setName('selectedObject');
+        selectedObject.setX(-1000);
+        selectedObject.setY(-1000);
+        this.addEntity(selectedObject, this.layers.userMap);
+
+        this.getEntity('areaForSelectedObject').setEntity(selectedObject);
+    }
+
+    _takeInHand(entity, x, y) {
+        let objectInHand = Utility.cloneEntity(entity);
+        objectInHand.setName('objectInHand');
+        objectInHand.setX(x);
+        objectInHand.setY(y);
+        objectInHand.setState(SHIP_STATE.PICKED_UP);
+        this.addEntity(objectInHand, this.layers.userMap);
+        this._hand = objectInHand;
     }
 }

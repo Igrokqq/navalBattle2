@@ -7,7 +7,14 @@ The game "Sea battle" acts as a test project.
 ## Client
 ```bash
 npm install
+```
+### Build
+```bash
 npm run build
+```
+### Developing
+```bash
+npm run watch
 ```
 
 ## Server
