@@ -97,6 +97,10 @@ export class Ship extends Entity {
         this._count--;
     }
 
+    increaseCount() {
+        this._count++;
+    }
+
     getCoords() {
         let coords = [];
         for (let i = 0; i < this.getSize(); i++) {

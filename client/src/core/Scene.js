@@ -93,6 +93,10 @@ export class Scene {
         return this._entities[name];
     }
 
+    hasEntity(name) {
+        return this._entities[name] !== undefined;
+    }
+
     getSoundManager() {
         return this._soundManager;
     }

@@ -40,13 +40,25 @@ export class SeaField extends Entity {
         return this._positionObjects.length;
     }
 
-    setShip(ship) {
+    addShip(ship) {
         let shipCoords = ship.getCoords();
         let obj = {
+            name: ship.getName(),
             coords: shipCoords,
             collisionCoords: this._getCollisionCoords(shipCoords)
         };
         this._positionObjects.push(obj);
+    }
+
+    removeShip(ship) {
+        let index = -1;
+        for (let i = 0; i < this._positionObjects.length; i++) {
+            if (this._positionObjects[i].name === ship.getName()) {
+                index = i;
+                break;
+            }
+        }
+        this._positionObjects.splice(index, 1);
     }
 
     checkCollision(entity) {
