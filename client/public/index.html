@@ -6,6 +6,11 @@
 </head>
 <body>
     <div id="container"></div>
-    <script src="app.js"></script>
+    <script>
+        let scriptTag = document.createElement('script');
+        scriptTag.src = 'app.js?t=' + new Date().getTime();
+
+        document.querySelector('body').append(scriptTag);
+    </script>
 </body>
 </html>
