@@ -18,4 +18,17 @@ export class Utility {
 
         return newEntity;
     }
+
+    static getHash(length) {
+        let hash = '';
+        const symbols = '0123456789ABCDEF#$()^%@';
+
+        for (let i = 0; i < length; i += 1) {
+            const index = Math.floor(Math.random() * 16);
+
+            hash += [...symbols][index];
+        }
+
+        return hash;
+    }
 }

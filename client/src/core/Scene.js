@@ -1,5 +1,6 @@
 import { Logger } from './Logger';
 import {FpsText} from "../entities/FpsText";
+import {SoundManager} from "./SoundManager";
 
 // мои слои, наша отрисовка слоев
 export class Scene {
@@ -9,6 +10,7 @@ export class Scene {
         this._entityDepthCount = 0;
         this._layerDepthCount = 0;
         this._cursorInsideEntities = {};
+        this._soundManager = new SoundManager();
 
         this._debugInfo = {
             layerName: '__engineDebugInfo',
@@ -89,6 +91,10 @@ export class Scene {
         }
 
         return this._entities[name];
+    }
+
+    getSoundManager() {
+        return this._soundManager;
     }
 
     addEntity(entity, layer) {
